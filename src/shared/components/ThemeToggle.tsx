@@ -1,13 +1,16 @@
 import { Moon, Sun } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
+import { useOptionalI18n } from '@/shared/lib/i18n';
 import { useTheme } from '@/shared/lib/theme';
 
 export interface ThemeToggleProps {
+  compact?: boolean;
   className?: string;
 }
 
-export function ThemeToggle({ className }: ThemeToggleProps) {
+export function ThemeToggle({ compact = false, className }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
+  const i18n = useOptionalI18n();
   const isDark = theme === 'dark';
 
   return (
@@ -24,6 +27,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
         type="button"
         onClick={() => setTheme('light')}
         aria-pressed={!isDark}
+        aria-label={i18n ? i18n.t('theme.light') : 'Light'}
         className={cn(
           'inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium whitespace-nowrap cursor-pointer',
           'transition-all duration-200 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
@@ -34,13 +38,14 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
         )}
       >
         <Sun className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-        <span>Light</span>
+        {!compact && <span>{i18n ? i18n.t('theme.light') : 'Light'}</span>}
       </button>
 
       <button
         type="button"
         onClick={() => setTheme('dark')}
         aria-pressed={isDark}
+        aria-label={i18n ? i18n.t('theme.dark') : 'Dark'}
         className={cn(
           'inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium whitespace-nowrap cursor-pointer',
           'transition-all duration-200 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
@@ -51,7 +56,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
         )}
       >
         <Moon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-        <span>Dark</span>
+        {!compact && <span>{i18n ? i18n.t('theme.dark') : 'Dark'}</span>}
       </button>
     </div>
   );

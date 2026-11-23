@@ -8,6 +8,10 @@ export {
   ConfirmDialog,
   type ConfirmDialogProps,
 } from '@/shared/components/ConfirmDialog';
+export {
+  LanguageToggle,
+  type LanguageToggleProps,
+} from '@/shared/components/LanguageToggle';
 export { Modal, type ModalProps } from '@/shared/components/Modal';
 export {
   PrecisionSelector,

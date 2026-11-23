@@ -1,42 +1,49 @@
 import { Crosshair, Radar } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
+import { useOptionalI18n } from '@/shared/lib/i18n';
 import type { LocationPrecision } from '@/shared/types/ui';
 
 export interface PrecisionSelectorProps {
   value: LocationPrecision;
   onChange: (value: LocationPrecision) => void;
   disabled?: boolean;
+  hideDescription?: boolean;
   className?: string;
 }
-
-const options: Array<{
-  value: LocationPrecision;
-  label: string;
-  telemetry: string;
-  description: string;
-}> = [
-  {
-    value: 'exact',
-    label: 'Exact GPS',
-    telemetry: 'Pinpoint',
-    description:
-      'Shares your live GPS coordinates (lat, lng, accuracy_meters) directly with selected friends.',
-  },
-  {
-    value: 'approximate',
-    label: 'Approximate',
-    telemetry: '500m Zone',
-    description:
-      'Applies deterministic 500m spatial jitter server-side before exposing your neighborhood zone.',
-  },
-];
 
 export function PrecisionSelector({
   value,
   onChange,
   disabled = false,
+  hideDescription = false,
   className,
 }: PrecisionSelectorProps) {
+  const i18n = useOptionalI18n();
+
+  const options: Array<{
+    value: LocationPrecision;
+    label: string;
+    telemetry: string;
+    description: string;
+  }> = [
+    {
+      value: 'exact',
+      label: i18n ? i18n.t('precision.exactLabel') : 'Exact GPS',
+      telemetry: i18n ? i18n.t('precision.exactTelemetry') : 'Pinpoint',
+      description: i18n
+        ? i18n.t('precision.exactDesc')
+        : 'Shares your live GPS coordinates (lat, lng, accuracy_meters) directly with selected friends.',
+    },
+    {
+      value: 'approximate',
+      label: i18n ? i18n.t('precision.approxLabel') : 'Approximate',
+      telemetry: i18n ? i18n.t('precision.approxTelemetry') : '500m Zone',
+      description: i18n
+        ? i18n.t('precision.approxDesc')
+        : 'Applies deterministic 500m spatial jitter server-side before exposing your neighborhood zone.',
+    },
+  ];
+
   const activeIndex = value === 'approximate' ? 1 : 0;
   const activeOption = options[activeIndex];
 
@@ -51,14 +58,13 @@ export function PrecisionSelector({
           disabled && 'opacity-50 pointer-events-none',
         )}
       >
-        {/* Sliding active indicator */}
         <span
           aria-hidden="true"
           className={cn(
-            'pointer-events-none absolute top-1 bottom-1 left-1 w-[calc(50%-0.25rem)] rounded-lg border',
+            'pointer-events-none absolute top-1 bottom-1 start-1 w-[calc(50%-0.25rem)] rounded-lg border',
             'bg-[#FFFFFF] border-[#E2DFD5] dark:bg-[#111418] dark:border-white/[0.1] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]',
             'transition-transform duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
-            activeIndex === 1 ? 'translate-x-full' : 'translate-x-0',
+            activeIndex === 1 ? 'ltr:translate-x-full rtl:-translate-x-full' : 'translate-x-0',
           )}
         />
 
@@ -103,18 +109,20 @@ export function PrecisionSelector({
         })}
       </div>
 
-      <div className="flex items-start gap-2.5 rounded-xl border border-[#E2DFD5] bg-[#EFECE4]/55 px-3.5 py-2.5 text-xs leading-relaxed text-[#575D66] dark:border-white/[0.08] dark:bg-[#191E24]/70 dark:text-[#8B949E]">
-        <span
-          className={cn(
-            'mt-1 h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-200',
-            value === 'exact'
-              ? 'bg-[#059669] dark:bg-[#10B981]'
-              : 'bg-[#0066FF] dark:bg-[#3B82F6]',
-          )}
-          aria-hidden="true"
-        />
-        <p>{activeOption.description}</p>
-      </div>
+      {!hideDescription && (
+        <div className="flex items-start gap-2.5 rounded-xl border border-[#E2DFD5] bg-[#EFECE4]/55 px-3.5 py-2.5 text-xs leading-relaxed text-[#575D66] dark:border-white/[0.08] dark:bg-[#191E24]/70 dark:text-[#8B949E]">
+          <span
+            className={cn(
+              'mt-1 h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-200',
+              value === 'exact'
+                ? 'bg-[#059669] dark:bg-[#10B981]'
+                : 'bg-[#0066FF] dark:bg-[#3B82F6]',
+            )}
+            aria-hidden="true"
+          />
+          <p>{activeOption.description}</p>
+        </div>
+      )}
     </div>
   );
 }

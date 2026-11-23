@@ -1,6 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from '@/app/App';
+import { I18nProvider } from '@/shared/lib/i18n';
+import { MockAppProvider } from '@/shared/lib/mockStore';
 import { ThemeProvider } from '@/shared/lib/theme';
 import '@/index.css';
 
@@ -13,7 +15,11 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <ThemeProvider>
-      <App />
+      <I18nProvider>
+        <MockAppProvider>
+          <App />
+        </MockAppProvider>
+      </I18nProvider>
     </ThemeProvider>
   </StrictMode>,
 );

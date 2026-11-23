@@ -1,10 +1,12 @@
 import { MapPinOff, Play, Radio, ShieldCheck, Users } from 'lucide-react';
 import { Button } from '@/shared/components/Button';
 import { cn } from '@/shared/lib/cn';
+import { useOptionalI18n } from '@/shared/lib/i18n';
 import type { LocationPrecision } from '@/shared/types/ui';
 
 export interface PrivacyHudPillProps {
   isSharing: boolean;
+  ghostMode?: boolean;
   precision: LocationPrecision;
   activeFriendsCount: number;
   remainingSeconds: number;
@@ -27,6 +29,7 @@ function formatDuration(totalSeconds: number): string {
 
 export function PrivacyHudPill({
   isSharing,
+  ghostMode = false,
   precision,
   activeFriendsCount,
   remainingSeconds,
@@ -34,6 +37,33 @@ export function PrivacyHudPill({
   onResumeClick,
   className,
 }: PrivacyHudPillProps) {
+  const i18n = useOptionalI18n();
+  const isEffectivelyLive = isSharing && !ghostMode;
+
+  const statusText = ghostMode
+    ? i18n
+      ? i18n.t('hud.ghostActive')
+      : 'Ghost Freeze Active'
+    : isSharing
+      ? precision === 'exact'
+        ? i18n
+          ? i18n.t('hud.liveExact')
+          : 'Live · Exact GPS'
+        : i18n
+          ? i18n.t('hud.liveApprox')
+          : 'Live · 500m Zone'
+      : i18n
+        ? i18n.t('hud.paused')
+        : 'Sharing Paused';
+
+  const friendWord = i18n
+    ? activeFriendsCount === 1
+      ? i18n.t('hud.friendSingle')
+      : i18n.t('hud.friendPlural')
+    : activeFriendsCount === 1
+      ? 'friend'
+      : 'friends';
+
   return (
     <div
       role="region"
@@ -47,9 +77,8 @@ export function PrivacyHudPill({
       )}
     >
       <div className="flex flex-wrap items-center gap-3 min-w-0">
-        {/* Live / Paused Signal */}
         <div className="flex items-center gap-2 whitespace-nowrap">
-          {isSharing ? (
+          {isEffectivelyLive ? (
             <span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden="true">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#059669] opacity-75 dark:bg-[#10B981]" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#059669] dark:bg-[#10B981]" />
@@ -60,13 +89,7 @@ export function PrivacyHudPill({
               aria-hidden="true"
             />
           )}
-          <span className="text-xs font-semibold tracking-tight">
-            {isSharing
-              ? precision === 'exact'
-                ? 'Live · Exact GPS'
-                : 'Live · 500m Zone'
-              : 'Sharing Paused'}
-          </span>
+          <span className="text-xs font-semibold tracking-tight">{statusText}</span>
         </div>
 
         <span
@@ -74,32 +97,30 @@ export function PrivacyHudPill({
           aria-hidden="true"
         />
 
-        {/* Active Viewers & Timer */}
         <div className="flex items-center gap-3 text-xs text-[#575D66] dark:text-[#8B949E]">
           <span className="inline-flex items-center gap-1.5 font-mono tabular-nums whitespace-nowrap">
             <Users className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             <span>
-              {isSharing ? activeFriendsCount : 0}{' '}
-              {isSharing && activeFriendsCount === 1 ? 'friend' : 'friends'}
+              {isEffectivelyLive ? activeFriendsCount : 0}{' '}
+              {isEffectivelyLive ? friendWord : i18n ? i18n.t('hud.friendPlural') : 'friends'}
             </span>
           </span>
 
           <span className="inline-flex items-center gap-1.5 font-mono tabular-nums whitespace-nowrap">
             <Radio className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-            <span>{isSharing ? formatDuration(remainingSeconds) : '00:00'}</span>
+            <span>{isEffectivelyLive ? formatDuration(remainingSeconds) : '00:00'}</span>
           </span>
         </div>
       </div>
 
-      {/* Kill-Switch / Resume Action */}
-      {isSharing ? (
+      {isEffectivelyLive ? (
         <Button
           variant="danger"
           size="sm"
           leftIcon={<MapPinOff className="h-3.5 w-3.5" aria-hidden="true" />}
           onClick={onStopClick}
         >
-          Stop
+          {i18n ? i18n.t('hud.stop') : 'Stop'}
         </Button>
       ) : (
         <Button
@@ -108,7 +129,7 @@ export function PrivacyHudPill({
           leftIcon={<Play className="h-3.5 w-3.5" aria-hidden="true" />}
           onClick={onResumeClick}
         >
-          Resume
+          {i18n ? i18n.t('hud.resume') : 'Resume'}
         </Button>
       )}
     </div>
