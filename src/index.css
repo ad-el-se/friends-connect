@@ -1,0 +1,92 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Plus Jakarta Sans", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+:root {
+  --fc-canvas: #F6F5F0;
+  --fc-surface: #FFFFFF;
+  --fc-surface-subtle: #EFECE4;
+  --fc-ink: #111315;
+  --fc-ink-muted: #575D66;
+  --fc-border: #E2DFD5;
+  --fc-inner-highlight: none;
+  --fc-cobalt: #0066FF;
+  --fc-emerald: #059669;
+  --fc-amber: #D97706;
+  --fc-crimson: #DC2626;
+  --fc-topo-dot: rgba(17, 19, 21, 0.14);
+  --fc-topo-line: rgba(17, 19, 21, 0.06);
+  --fc-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark {
+  --fc-canvas: #090B0D;
+  --fc-surface: #111418;
+  --fc-surface-subtle: #191E24;
+  --fc-ink: #F3F5F7;
+  --fc-ink-muted: #8B949E;
+  --fc-border: rgba(255, 255, 255, 0.08);
+  --fc-inner-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --fc-cobalt: #3B82F6;
+  --fc-emerald: #10B981;
+  --fc-amber: #F59E0B;
+  --fc-crimson: #EF4444;
+  --fc-topo-dot: rgba(243, 245, 247, 0.14);
+  --fc-topo-line: rgba(255, 255, 255, 0.05);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background-color: var(--fc-canvas);
+    color: var(--fc-ink);
+  }
+
+  body {
+    background-color: var(--fc-canvas);
+    color: var(--fc-ink);
+  }
+}
+
+.fc-surface {
+  background-color: var(--fc-surface);
+  border: 1px solid var(--fc-border);
+  box-shadow: var(--fc-inner-highlight);
+}
+
+.fc-surface-subtle {
+  background-color: var(--fc-surface-subtle);
+  border: 1px solid var(--fc-border);
+}
+
+.fc-topo-grid {
+  background-image:
+    radial-gradient(circle, var(--fc-topo-dot) 1px, transparent 1px),
+    linear-gradient(to right, var(--fc-topo-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--fc-topo-line) 1px, transparent 1px);
+  background-size: 20px 20px, 80px 80px, 80px 80px;
+  background-position: 0 0, 0 0, 0 0;
+}
+
+.fc-spring {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
